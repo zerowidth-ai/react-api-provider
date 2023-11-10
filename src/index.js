@@ -15,7 +15,7 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
   const [error, setError] = useState({});
   const [loading, setLoading] = useState({});
 
-  // Function to update the data
+  // Function to process data through an installed intelligence
   const process = useCallback(async (options = {} , identifier = uuidv4()) => {
     // Set loading state for this specific identifier
     setLoading((prevLoading) => ({ ...prevLoading, [identifier]: true }));
@@ -28,9 +28,8 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
       const response = await axios({
         method: 'POST',
         url: url,
-        params: { appId, ...options.params }, // assuming GET request, pass appId and other params
-        data: options, // for POST requests, the body payload
-        // Add any other axios config as needed
+        params: { appId, ...options.params }, 
+        data: options, 
       });
       // Set data for this specific identifier
       setData((prevData) => ({ ...prevData, [identifier]: response.data }));
@@ -44,7 +43,7 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
   }, [proxyUrl, appId]);
 
 
-
+  // Function to get the history of a specific intelligence
   const getHistory = useCallback(async ({ intelligenceId, userId, sessionId, startAfter } = {}, identifier = uuidv4()) => {
     setLoading((prevLoading) => ({ ...prevLoading, [identifier]: true }));
     setError((prevError) => ({ ...prevError, [identifier]: null }));
