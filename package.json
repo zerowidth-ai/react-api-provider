@@ -1,0 +1,33 @@
+{
+  "name": "@zerowidth/react-api-provider",
+  "version": "0.1.0-beta",
+  "description": "an easy way to connect React apps to ZeroWidth",
+  "source": "src/index.js",
+  "type": "module",
+  "main": "./dist/cjs/main.cjs",
+  "module": "./dist/esm/main.js",
+  "exports": {
+    ".": {
+      "import": "./dist/esm/main.js",
+      "require": "./dist/cjs/main.cjs"
+    }
+  },
+  "repository": "https://pbinggeser@github.com/zerowidth-ai/react-api-provider.git",
+  "author": "Peter Binggeser <pete@zerowidth.ai>",
+  "license": "MIT",
+  "scripts": {
+    "watch": "parcel watch",
+    "build": "parcel build"
+  },
+  "dependencies": {
+    "axios": "^1.6.1",
+    "uuid": "^9.0.1"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.10.2"
+  }
+}
