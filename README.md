@@ -89,6 +89,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) f
 ## Support
 
 For support, please open an issue in the GitHub repository or contact us through via our website: [zerowidth.ai](https://zerowidth.ai).
-```
-
-Make sure to replace `"your-app-id"` and `"your-intelligence-id"` with actual values provided by the ZeroWidth Workbench. 

@@ -1,6 +1,6 @@
 {
   "name": "@zerowidth/react-api-provider",
-  "version": "0.1.0-beta",
+  "version": "0.1.1-beta",
   "description": "an easy way to connect React apps to ZeroWidth",
   "source": "src/index.js",
   "type": "module",
