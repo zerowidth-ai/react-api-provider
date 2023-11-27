@@ -5,11 +5,11 @@ import MyActiveComponent from './MyActiveComponent';
 import MyPassiveComponent from './MyPassiveComponent';
 
 function App() {
-  const appId = 'your-app-id'; // Replace with actual app ID
+  const endpointId = 'your-endpoint-collection-id'; // Replace with actual endpoint collection ID
   const proxyUrl = '/api/0w-proxy'; // Replace with the actual URL to your proxy endpoint
 
   return (
-    <ZeroWidthApiProvider appId={appId} proxyUrl={proxyUrl}>
+    <ZeroWidthApiProvider endpointId={endpointId} proxyUrl={proxyUrl}>
       <div className="App">
         <MyActiveComponent />
         <MyPassiveComponent />

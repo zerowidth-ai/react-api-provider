@@ -1,14 +1,23 @@
 // ZeroWidthApiProvider.js
 import React, { createContext, useState, useContext, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 
 const ZeroWidthApiContext = createContext();
 
-export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
-  
-  if (typeof appId !== 'string' || typeof proxyUrl !== 'string') {
-    throw new Error('appId and proxyUrl props must be provided as strings to ZeroWidthApiProvider');
+export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) => {
+  // Use endpointId or fallback to appId for backward compatibility
+  const effectiveEndpointId = endpointId || appId;
+
+  // Deprecation warning for appId
+  if (appId) {
+    console.warn('Warning: The appId prop is deprecated and will be removed in future versions. Please use endpointId instead.');
+  }
+
+  // Validation for required props
+  if (typeof effectiveEndpointId !== 'string' || typeof proxyUrl !== 'string') {
+    throw new Error('endpointId (or appId for backward compatibility) and proxyUrl props must be provided as strings to ZeroWidthApiProvider');
   }
 
   const [data, setData] = useState({});
@@ -17,18 +26,18 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
 
   // Function to process data through an installed intelligence
   const process = useCallback(async (options = {} , identifier = uuidv4()) => {
+
     // Set loading state for this specific identifier
     setLoading((prevLoading) => ({ ...prevLoading, [identifier]: true }));
     setError((prevError) => ({ ...prevError, [identifier]: null }));
 
     try {
       // Construct the full URL to the proxy endpoint
-      const url = `${proxyUrl}/process/${appId}/${options.intelligenceId}`;
+      const url = `${proxyUrl}/process/${endpointId}/${options.intelligenceId}`;
       // Make the HTTP request using axios
       const response = await axios({
         method: 'POST',
         url: url,
-        params: { appId, ...options.params }, 
         data: options, 
       });
       // Set data for this specific identifier
@@ -40,7 +49,7 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
       // Set loading state to false for this specific identifier
       setLoading((prevLoading) => ({ ...prevLoading, [identifier]: false }));
     }
-  }, [proxyUrl, appId]);
+  }, [proxyUrl, endpointId]);
 
 
   // Function to get the history of a specific intelligence
@@ -49,7 +58,7 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
     setError((prevError) => ({ ...prevError, [identifier]: null }));
 
     try {
-      const url = `${proxyUrl}/history/${appId}/${intelligenceId}/${userId}/${sessionId}`;
+      const url = `${proxyUrl}/history/${endpointId}/${intelligenceId}/${userId}/${sessionId}`;
       const params = startAfter ? { startAfter } : {};
       const response = await axios.get(url, { params });
       setData((prevData) => ({ ...prevData, [identifier]: response.data }));
@@ -58,7 +67,7 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
     } finally {
       setLoading((prevLoading) => ({ ...prevLoading, [identifier]: false }));
     }
-  }, [proxyUrl, appId]);
+  }, [proxyUrl, endpointId]);
 
   // Expose the context value
   const contextValue = {
@@ -74,6 +83,19 @@ export const ZeroWidthApiProvider = ({ children, appId, proxyUrl }) => {
       {children}
     </ZeroWidthApiContext.Provider>
   );
+};
+
+
+ZeroWidthApiProvider.propTypes = {
+  children: PropTypes.node,
+  appId: PropTypes.string, // This should be marked as deprecated
+  endpointId: PropTypes.string,
+  proxyUrl: PropTypes.string.isRequired,
+};
+
+ZeroWidthApiProvider.defaultProps = {
+  appId: '',
+  endpointId: '',
 };
 
 export const useZeroWidthApi = () => {

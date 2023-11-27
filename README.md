@@ -31,7 +31,7 @@ Wrap your application's root component with `ZeroWidthApiProvider` to make the c
 import { ZeroWidthApiProvider } from '@zerowidth/react-api-provider';
 
 const App = ({ children }) => (
-  <ZeroWidthApiProvider appId="your-app-id" proxyUrl="your-set-proxy-url">
+  <ZeroWidthApiProvider endpointId="your-endpoint-collection-id" proxyUrl="your-set-proxy-url">
     {children}
   </ZeroWidthApiProvider>
 );
@@ -66,7 +66,7 @@ export default MyComponent;
 
 ### `ZeroWidthApiProvider`
 
-A context provider component that accepts `appId` and `proxyUrl` as props and wraps the application.
+A context provider component that accepts `endpointId` and `proxyUrl` as props and wraps the application.
 
 ### `useZeroWidthApi`
 
