@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 const ZeroWidthApiContext = createContext();
 
 export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) => {
+    
   // Use endpointId or fallback to appId for backward compatibility
   const effectiveEndpointId = endpointId || appId;
 
@@ -16,7 +17,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) 
   }
 
   // Validation for required props
-  if (typeof effectiveEndpointId !== 'string' || typeof proxyUrl !== 'string') {
+  if (effectiveEndpointId === '' || typeof effectiveEndpointId !== 'string' || typeof proxyUrl !== 'string') {
     throw new Error('endpointId (or appId for backward compatibility) and proxyUrl props must be provided as strings to ZeroWidthApiProvider');
   }
 
@@ -33,7 +34,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) 
 
     try {
       // Construct the full URL to the proxy endpoint
-      const url = `${proxyUrl}/process/${endpointId}/${options.intelligenceId}`;
+      const url = `${proxyUrl}/process/${effectiveEndpointId}/${options.intelligenceId}`;
       // Make the HTTP request using axios
       const response = await axios({
         method: 'POST',
@@ -49,7 +50,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) 
       // Set loading state to false for this specific identifier
       setLoading((prevLoading) => ({ ...prevLoading, [identifier]: false }));
     }
-  }, [proxyUrl, endpointId]);
+  }, [proxyUrl, effectiveEndpointId]);
 
 
   // Function to get the history of a specific intelligence
@@ -58,7 +59,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) 
     setError((prevError) => ({ ...prevError, [identifier]: null }));
 
     try {
-      const url = `${proxyUrl}/history/${endpointId}/${intelligenceId}/${userId}/${sessionId}`;
+      const url = `${proxyUrl}/history/${effectiveEndpointId}/${intelligenceId}/${userId}/${sessionId}`;
       const params = startAfter ? { startAfter } : {};
       const response = await axios.get(url, { params });
       setData((prevData) => ({ ...prevData, [identifier]: response.data }));
@@ -67,7 +68,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl }) 
     } finally {
       setLoading((prevLoading) => ({ ...prevLoading, [identifier]: false }));
     }
-  }, [proxyUrl, endpointId]);
+  }, [proxyUrl, effectiveEndpointId]);
 
   // Expose the context value
   const contextValue = {

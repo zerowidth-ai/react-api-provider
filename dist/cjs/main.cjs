@@ -2,6 +2,7 @@ var $a9A1a$reactjsxdevruntime = require("react/jsx-dev-runtime");
 var $a9A1a$react = require("react");
 var $a9A1a$axios = require("axios");
 var $a9A1a$uuid = require("uuid");
+var $a9A1a$proptypes = require("prop-types");
 
 
 function $parcel$interopDefault(a) {
@@ -19,9 +20,15 @@ $parcel$export(module.exports, "useZeroWidthApi", () => $4fa36e821943b400$export
 
 
 
+
 const $4fa36e821943b400$var$ZeroWidthApiContext = /*#__PURE__*/ (0, $a9A1a$react.createContext)();
-const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: appId, proxyUrl: proxyUrl })=>{
-    if (typeof appId !== "string" || typeof proxyUrl !== "string") throw new Error("appId and proxyUrl props must be provided as strings to ZeroWidthApiProvider");
+const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: appId, endpointId: endpointId, proxyUrl: proxyUrl })=>{
+    // Use endpointId or fallback to appId for backward compatibility
+    const effectiveEndpointId = endpointId || appId;
+    // Deprecation warning for appId
+    if (appId) console.warn("Warning: The appId prop is deprecated and will be removed in future versions. Please use endpointId instead.");
+    // Validation for required props
+    if (effectiveEndpointId === "" || typeof effectiveEndpointId !== "string" || typeof proxyUrl !== "string") throw new Error("endpointId (or appId for backward compatibility) and proxyUrl props must be provided as strings to ZeroWidthApiProvider");
     const [data, setData] = (0, $a9A1a$react.useState)({});
     const [error, setError] = (0, $a9A1a$react.useState)({});
     const [loading, setLoading] = (0, $a9A1a$react.useState)({});
@@ -38,7 +45,7 @@ const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: 
             }));
         try {
             // Construct the full URL to the proxy endpoint
-            const url = `${proxyUrl}/process/${appId}/${options.intelligenceId}`;
+            const url = `${proxyUrl}/process/${effectiveEndpointId}/${options.intelligenceId}`;
             // Make the HTTP request using axios
             const response = await (0, ($parcel$interopDefault($a9A1a$axios)))({
                 method: "POST",
@@ -65,7 +72,7 @@ const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: 
         }
     }, [
         proxyUrl,
-        appId
+        effectiveEndpointId
     ]);
     // Function to get the history of a specific intelligence
     const getHistory = (0, $a9A1a$react.useCallback)(async ({ intelligenceId: intelligenceId, userId: userId, sessionId: sessionId, startAfter: startAfter } = {}, identifier = (0, $a9A1a$uuid.v4)())=>{
@@ -78,7 +85,7 @@ const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: 
                 [identifier]: null
             }));
         try {
-            const url = `${proxyUrl}/history/${appId}/${intelligenceId}/${userId}/${sessionId}`;
+            const url = `${proxyUrl}/history/${effectiveEndpointId}/${intelligenceId}/${userId}/${sessionId}`;
             const params = startAfter ? {
                 startAfter: startAfter
             } : {};
@@ -102,7 +109,7 @@ const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: 
         }
     }, [
         proxyUrl,
-        appId
+        effectiveEndpointId
     ]);
     // Expose the context value
     const contextValue = {
@@ -117,9 +124,19 @@ const $4fa36e821943b400$export$37cc2048dc8e0ef4 = ({ children: children, appId: 
         children: children
     }, void 0, false, {
         fileName: "src/index.js",
-        lineNumber: 74,
+        lineNumber: 83,
         columnNumber: 5
     }, undefined);
+};
+$4fa36e821943b400$export$37cc2048dc8e0ef4.propTypes = {
+    children: (0, ($parcel$interopDefault($a9A1a$proptypes))).node,
+    appId: (0, ($parcel$interopDefault($a9A1a$proptypes))).string,
+    endpointId: (0, ($parcel$interopDefault($a9A1a$proptypes))).string,
+    proxyUrl: (0, ($parcel$interopDefault($a9A1a$proptypes))).string.isRequired
+};
+$4fa36e821943b400$export$37cc2048dc8e0ef4.defaultProps = {
+    appId: "",
+    endpointId: ""
 };
 const $4fa36e821943b400$export$bd5c376b411b5524 = ()=>{
     const context = (0, $a9A1a$react.useContext)($4fa36e821943b400$var$ZeroWidthApiContext);
