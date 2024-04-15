@@ -9,7 +9,7 @@ function MyActiveComponent() {
 
   useEffect(() => {
     process({
-      intelligenceId: 'your-intel-id', // Replace with actual intelligence ID
+      agentId: 'your-agent-id', // Replace with actual agent ID
       data: { 
         variables: {
           A: 200,

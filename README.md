@@ -51,7 +51,7 @@ const MyComponent = () => {
 
   useEffect(() => {
     process({
-      intelligenceId: 'your-intelligence-id',
+      agentId: 'your-agent-id',
       data: { /* your data here */ },
     }, identifier);
   }, [process, identifier]);
