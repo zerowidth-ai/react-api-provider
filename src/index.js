@@ -4,16 +4,19 @@ const ZeroWidthApiContext = createContext();
 
 const generateId = () => `id_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl, debugMode }) => {
+export const ZeroWidthApiProvider = ({ children, appId, endpointId, projectId, proxyUrl, debugMode }) => {
   if (debugMode) console.log('ZeroWidthApiProvider', { appId, endpointId, proxyUrl, debugMode });
 
-  const effectiveEndpointId = endpointId || appId;
+  const effectiveProjectId = projectId || endpointId || appId;
   if (appId) {
-    console.warn('Warning: The appId prop is deprecated and will be removed in future versions. Please use endpointId instead.');
+    console.warn('Warning: The appId prop is deprecated and will be removed in future versions. Please use projectId instead.');
+  }
+  if (endpointId) {
+    console.warn('Warning: The endpointId prop is deprecated and will be removed in future versions. Please use projectId instead.');
   }
 
-  if (!effectiveEndpointId || typeof effectiveEndpointId !== 'string' || typeof proxyUrl !== 'string') {
-    throw new Error('endpointId (or appId for backward compatibility) and proxyUrl props must be provided as strings to ZeroWidthApiProvider');
+  if (!effectiveProjectId || typeof effectiveProjectId !== 'string' || typeof proxyUrl !== 'string') {
+    throw new Error('projectId and proxyUrl props must be provided as strings to ZeroWidthApiProvider');
   }
 
   const [data, setData] = useState({});
@@ -28,7 +31,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl, de
     setData(prev => ({ ...prev, [identifier]: null }));
 
     try {
-      const url = `${proxyUrl}/process/${effectiveEndpointId}/${options.agentId}`;
+      const url = `${proxyUrl}/process/${effectiveProjectId}/${options.agentId}`;
       const headers = { 'Content-Type': 'application/json' };
 
       if (options.stream) {
@@ -91,7 +94,8 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl, de
     } finally {
       setLoading(prev => ({ ...prev, [identifier]: false }));
     }
-  }, [proxyUrl, effectiveEndpointId]);
+  }, [proxyUrl, effectiveProjectId]);
+
 
   const getHistory = useCallback(async ({ agentId, userId, sessionId, startAfter } = {}, identifier = generateId()) => {
     setLoading(prev => ({ ...prev, [identifier]: true }));
@@ -99,7 +103,7 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl, de
 
     try {
       const queryParams = new URLSearchParams(startAfter ? { startAfter } : {});
-      const response = await fetch(`${proxyUrl}/history/${effectiveEndpointId}/${agentId}/${userId}/${sessionId}?${queryParams}`);
+      const response = await fetch(`${proxyUrl}/history/${effectiveProjectId}/${agentId}/${userId}/${sessionId}?${queryParams}`);
       const responseData = await response.json();
       setData(prev => ({ ...prev, [identifier]: responseData }));
     } catch (err) {
@@ -107,10 +111,37 @@ export const ZeroWidthApiProvider = ({ children, appId, endpointId, proxyUrl, de
     } finally {
       setLoading(prev => ({ ...prev, [identifier]: false }));
     }
-  }, [proxyUrl, effectiveEndpointId]);
+  }, [proxyUrl, effectiveProjectId]);
+
+  const report = useCallback(async ({ agentId, userId, sessionId, type, category, details, data } = {}, identifier = generateId()) => {
+    setLoading(prev => ({ ...prev, [identifier]: true }));
+    setError(prev => ({ ...prev, [identifier]: null }));
+
+    try {
+      let url = `${proxyUrl}/report/${effectiveProjectId}/${agentId}`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          user_id: userId,
+          session_id: sessionId,
+          type,
+          category,
+          details,
+          data
+        })
+      });
+
+      return await response.json();
+    } catch (err) {
+      setError(prev => ({ ...prev, [identifier]: err }));
+    } finally {
+      setLoading(prev => ({ ...prev, [identifier]: false }));
+    }
+  }, [proxyUrl, effectiveProjectId]);
 
   return (
-    <ZeroWidthApiContext.Provider value={{ data, error, loading, stream, process, getHistory }}>
+    <ZeroWidthApiContext.Provider value={{ data, error, loading, stream, process, getHistory, report }}>
       {children}
     </ZeroWidthApiContext.Provider>
   );

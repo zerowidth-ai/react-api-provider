@@ -42,8 +42,7 @@ import { ZeroWidthApiProvider } from '@zerowidth/react-api-provider';
 
 const App = () => (
   <ZeroWidthApiProvider
-    appId="your-app-id" 
-    endpointId="your-endpoint-id"
+    projectId="your-project-id"
     proxyUrl="/api/0w-proxy"
     debugMode={true}
   >
@@ -145,8 +144,8 @@ The provider component that supplies the ZeroWidth API context to its children.
 
 | Prop         | Type     | Default | Description                                                              |
 |--------------|----------|---------|--------------------------------------------------------------------------|
-| `appId`      | string   |         | Deprecated. Use `endpointId` instead.                                     |
-| `endpointId` | string   |         | The endpoint ID for the API.                                              |
+| `projectId`  | string   |         | The project ID for the API setup.                                        |
+| `endpointId` | string   |         | Deprecated. Use `projectId` instead.                                     |
 | `proxyUrl`   | string   |         | Where did you mount the @zerowidth/api Express middleware? |
 | `debugMode`  | boolean  | `false` | Enables debug mode, which logs additional information to the console.     |
 
